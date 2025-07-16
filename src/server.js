@@ -1,11 +1,3 @@
-import 'dotenv/config';
-import { initMongoConnection } from './db/initMongoConnection.js';
-import { setupServer } from './server.js';
-
-await initMongoConnection();
-setupServer();
-
-// src/server.js
 import express from 'express';
 import cors from 'cors';
 import pino from 'pino';
