@@ -8,6 +8,9 @@ import { notFoundHandler } from './middlewares/notFoundhandler.js';
 export function setupServer() {
   const app = express();
   const logger = pino();
+  app.get('/', (req, res) => {
+    res.send('API is working');
+  });
 
   app.use(pinoHttp({ logger }));
   app.use(cors());
