@@ -3,8 +3,9 @@ import cors from 'cors';
 import pino from 'pino';
 import pinoHttp from 'pino-http';
 import contactsRouter from './routes/contacts.js';
-import { errorHandler } from './middlewares/errorHandler.js';
 import { notFoundHandler } from './middlewares/notFoundhandler.js';
+import { errorHandler } from './middlewares/errorHandler.js';
+
 export function setupServer() {
   const app = express();
   const logger = pino();
