@@ -2,23 +2,23 @@ import * as service from '../services/contacts.js';
 import createError from 'http-errors';
 
 export const getAllContacts = async (req, res) => {
-  const data = await service.getAllContacts();
-  res
-    .status(200)
-    .json({ status: 200, message: 'Successfully found contacts!', data });
+  const result = await service.getAllContacts(req.query);
+  res.status(200).json({
+    status: 200,
+    message: 'Successfully found contacts!',
+    data: result,
+  });
 };
 
 export const getContactById = async (req, res) => {
   const { contactId } = req.params;
   const data = await service.getContactById(contactId);
   if (!data) throw createError(404, 'Contact not found');
-  res
-    .status(200)
-    .json({
-      status: 200,
-      message: `Successfully found contact with id ${contactId}!`,
-      data,
-    });
+  res.status(200).json({
+    status: 200,
+    message: `Successfully found contact with id ${contactId}!`,
+    data,
+  });
 };
 
 export const createContact = async (req, res) => {
