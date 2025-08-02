@@ -3,21 +3,29 @@ import cors from 'cors';
 import pino from 'pino';
 import pinoHttp from 'pino-http';
 import contactsRouter from './routes/contacts.js';
+import authRouter from './routes/auth.js';
+import cookieParser from 'cookie-parser';
 import { notFoundHandler } from './middlewares/notFoundhandler.js';
 import { errorHandler } from './middlewares/errorHandler.js';
 
 export function setupServer() {
   const app = express();
   const logger = pino();
+
+  // 🔧 Порядок важливий
+  app.use(pinoHttp({ logger }));
+  app.use(cors());
+  app.use(express.json()); // 🔥 JSON parser має бути перед роутами
+  app.use(cookieParser());
+
   app.get('/', (req, res) => {
     res.send('API is working');
   });
 
-  app.use(pinoHttp({ logger }));
-  app.use(cors());
-  app.use(express.json());
-
+  // 🔧 Роути підключаються після всіх парсерів
+  app.use('/auth', authRouter);
   app.use('/contacts', contactsRouter);
+
   app.use(notFoundHandler);
   app.use(errorHandler);
 
