@@ -2,7 +2,8 @@ import * as service from '../services/contacts.js';
 import createError from 'http-errors';
 
 export const getAllContacts = async (req, res) => {
-  const result = await service.getAllContacts(req.query);
+  const userId = req.user._id;
+  const result = await service.getAllContacts(userId, req.query);
   res.status(200).json({
     status: 200,
     message: 'Successfully found contacts!',
@@ -12,8 +13,11 @@ export const getAllContacts = async (req, res) => {
 
 export const getContactById = async (req, res) => {
   const { contactId } = req.params;
-  const data = await service.getContactById(contactId);
+  const userId = req.user._id;
+
+  const data = await service.getContactById(contactId, userId);
   if (!data) throw createError(404, 'Contact not found');
+
   res.status(200).json({
     status: 200,
     message: `Successfully found contact with id ${contactId}!`,
@@ -22,26 +26,38 @@ export const getContactById = async (req, res) => {
 };
 
 export const createContact = async (req, res) => {
-  const data = await service.createContact(req.body);
-  res
-    .status(201)
-    .json({ status: 201, message: 'Successfully created a contact!', data });
+  const userId = req.user._id;
+  const data = await service.createContact(req.body, userId);
+
+  res.status(201).json({
+    status: 201,
+    message: 'Successfully created a contact!',
+    data,
+  });
 };
 
 export const updateContact = async (req, res) => {
   const { contactId } = req.params;
-  const data = await service.updateContact(contactId, req.body);
+  const userId = req.user._id;
+  const data = await service.updateContact(contactId, req.body, userId);
+
   if (!data) throw createError(404, 'Contact not found');
-  res
-    .status(200)
-    .json({ status: 200, message: 'Successfully patched a contact!', data });
+
+  res.status(200).json({
+    status: 200,
+    message: 'Successfully updated a contact!',
+    data,
+  });
 };
 
 export const deleteContact = async (req, res) => {
   const { contactId } = req.params;
-  const result = await service.deleteContact(contactId);
+  const userId = req.user._id;
+  const result = await service.deleteContact(contactId, userId);
+
   if (!result) throw createError(404, 'Contact not found');
-  res.status(204).send();
+
+  res.status(204).send(); // No content
 };
 
 export default {

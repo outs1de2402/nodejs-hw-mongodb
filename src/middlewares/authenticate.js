@@ -8,10 +8,12 @@ export const authenticate = async (req, res, next) => {
   try {
     const authHeader = req.headers.authorization || '';
     const [bearer, token] = authHeader.split(' ');
+
     if (bearer !== 'Bearer' || !token) throw createError(401, 'Not authorized');
 
-    const { id } = jwt.verify(token, ACCESS_SECRET);
-    const user = await User.findById(id);
+    const { sub } = jwt.verify(token, ACCESS_SECRET); // <-- тут важливо
+    const user = await User.findById(sub); // <-- шукаємо користувача по sub
+
     if (!user) throw createError(401, 'User not found');
 
     req.user = user;

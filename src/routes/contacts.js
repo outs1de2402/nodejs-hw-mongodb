@@ -7,8 +7,12 @@ import {
   createContactSchema,
   updateContactSchema,
 } from '../schemas/contactSchema.js';
+import { authenticate } from '../middlewares/authenticate.js'; // 🔐 Додано
 
 const router = express.Router();
+
+// 🔐 Захист усіх маршрутів
+router.use(authenticate);
 
 router.get('/', ctrlWrapper(ctrl.getAllContacts));
 router.get('/:contactId', isValidId, ctrlWrapper(ctrl.getContactById));

@@ -1,18 +1,20 @@
 import { Contact } from '../models/contact.js';
 
-export const getAllContacts = async ({
-  page = 1,
-  perPage = 10,
-  sortBy = 'name',
-  sortOrder = 'asc',
-  type,
-  isFavourite,
-}) => {
+export const getAllContacts = async (
+  userId,
+  {
+    page = 1,
+    perPage = 10,
+    sortBy = 'name',
+    sortOrder = 'asc',
+    type,
+    isFavourite,
+  },
+) => {
   const skip = (page - 1) * perPage;
-
   const sort = { [sortBy]: sortOrder === 'desc' ? -1 : 1 };
 
-  const filter = {};
+  const filter = { userId };
   if (type) filter.contactType = type;
   if (typeof isFavourite !== 'undefined') {
     filter.isFavourite = isFavourite === 'true';
@@ -36,8 +38,14 @@ export const getAllContacts = async ({
   };
 };
 
-export const getContactById = (id) => Contact.findById(id);
-export const createContact = (data) => Contact.create(data);
-export const updateContact = (id, data) =>
-  Contact.findByIdAndUpdate(id, data, { new: true });
-export const deleteContact = (id) => Contact.findByIdAndDelete(id);
+export const getContactById = (id, userId) =>
+  Contact.findOne({ _id: id, userId });
+
+export const createContact = (data, userId) =>
+  Contact.create({ ...data, userId });
+
+export const updateContact = (id, data, userId) =>
+  Contact.findOneAndUpdate({ _id: id, userId }, data, { new: true });
+
+export const deleteContact = (id, userId) =>
+  Contact.findOneAndDelete({ _id: id, userId });

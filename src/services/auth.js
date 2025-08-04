@@ -28,12 +28,15 @@ export const loginUser = async (email, password) => {
   // Видаляємо стару сесію (якщо існує)
   await Session.findOneAndDelete({ userId: user._id });
 
-  const payload = { sub: user._id.toString(), sid: nanoid() };
+  const sid = nanoid();
 
-  const accessToken = jwt.sign(payload, ACCESS_SECRET, {
+  const accessToken = jwt.sign({}, ACCESS_SECRET, {
+    subject: user._id.toString(),
     expiresIn: ACCESS_EXPIRES_IN,
   });
-  const refreshToken = jwt.sign(payload, REFRESH_SECRET, {
+
+  const refreshToken = jwt.sign({ sid }, REFRESH_SECRET, {
+    subject: user._id.toString(),
     expiresIn: REFRESH_EXPIRES_IN,
   });
 
@@ -69,12 +72,15 @@ export const refreshSession = async (oldRefreshToken) => {
   // Видаляємо стару сесію
   await Session.findByIdAndDelete(existingSession._id);
 
-  const newPayload = { sub: payload.sub, sid: nanoid() };
+  const newSid = nanoid();
 
-  const accessToken = jwt.sign(newPayload, ACCESS_SECRET, {
+  const accessToken = jwt.sign({}, ACCESS_SECRET, {
+    subject: payload.sub,
     expiresIn: ACCESS_EXPIRES_IN,
   });
-  const refreshToken = jwt.sign(newPayload, REFRESH_SECRET, {
+
+  const refreshToken = jwt.sign({ sid: newSid }, REFRESH_SECRET, {
+    subject: payload.sub,
     expiresIn: REFRESH_EXPIRES_IN,
   });
 
