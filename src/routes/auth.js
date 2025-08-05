@@ -15,6 +15,6 @@ router.post(
 
 router.post('/login', validateBody(loginSchema), ctrlWrapper(ctrl.login));
 router.post('/logout', authenticate, ctrlWrapper(ctrl.logout));
-router.post('/refresh', ctrlWrapper(ctrl.refreshSession));
+router.post('/refresh', ctrlWrapper(ctrl.refresh));
 
 export default router;
