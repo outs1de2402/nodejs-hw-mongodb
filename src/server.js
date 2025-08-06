@@ -14,7 +14,12 @@ export function setupServer() {
 
   // 🔧 Порядок важливий
   app.use(pinoHttp({ logger }));
-  app.use(cors());
+  app.use(
+    cors({
+      origin: 'http://localhost:3000', // або твій фронт
+      credentials: true,
+    }),
+  );
   app.use(express.json()); // 🔥 JSON parser має бути перед роутами
   app.use(cookieParser());
 

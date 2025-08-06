@@ -29,7 +29,7 @@ export const login = async (req, res) => {
     .cookie('refreshToken', refreshToken, {
       httpOnly: true,
       sameSite: 'strict',
-      secure: true,
+      secure: false,
       maxAge: 30 * 24 * 60 * 60 * 1000,
     })
     .cookie('sessionId', session._id.toString(), {
@@ -37,6 +37,12 @@ export const login = async (req, res) => {
       sameSite: 'strict',
       secure: true,
       maxAge: 30 * 24 * 60 * 60 * 1000,
+    })
+    .cookie('accessToken', accessToken, {
+      httpOnly: true,
+      sameSite: 'strict',
+      secure: false,
+      maxAge: 15 * 60 * 1000,
     })
     .status(200)
     .json({
@@ -48,18 +54,12 @@ export const login = async (req, res) => {
 
 export const refresh = async (req, res) => {
   const oldRefreshToken = req.cookies.refreshToken;
-  const { accessToken, refreshToken, session } = await service.refreshSession(
+  const { accessToken, refreshToken } = await service.refreshSession(
     oldRefreshToken,
   );
 
   res
     .cookie('refreshToken', refreshToken, {
-      httpOnly: true,
-      sameSite: 'strict',
-      secure: true,
-      maxAge: 30 * 24 * 60 * 60 * 1000,
-    })
-    .cookie('sessionId', session._id.toString(), {
       httpOnly: true,
       sameSite: 'strict',
       secure: true,
@@ -79,5 +79,6 @@ export const logout = async (req, res) => {
 
   res.clearCookie('refreshToken');
   res.clearCookie('sessionId');
+  res.clearCookie('accessToken');
   res.status(204).send();
 };
