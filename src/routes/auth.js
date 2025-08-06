@@ -12,7 +12,6 @@ router.post(
   validateBody(registerSchema),
   ctrlWrapper(ctrl.register),
 );
-
 router.post('/login', validateBody(loginSchema), ctrlWrapper(ctrl.login));
 router.post('/logout', authenticate, ctrlWrapper(ctrl.logout));
 router.post('/refresh', ctrlWrapper(ctrl.refresh));

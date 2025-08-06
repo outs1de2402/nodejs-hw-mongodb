@@ -6,14 +6,12 @@ const ACCESS_SECRET = process.env.ACCESS_SECRET;
 
 export const authenticate = async (req, res, next) => {
   try {
-    const authHeader = req.headers.authorization || '';
-    const [bearer, token] = authHeader.split(' ');
+    const token = req.cookies.accessToken;
 
-    if (bearer !== 'Bearer' || !token) throw createError(401, 'Not authorized');
+    if (!token) throw createError(401, 'Not authorized');
 
-    const { sub } = jwt.verify(token, ACCESS_SECRET); // <-- тут важливо
-    const user = await User.findById(sub); // <-- шукаємо користувача по sub
-
+    const { sub } = jwt.verify(token, ACCESS_SECRET);
+    const user = await User.findById(sub);
     if (!user) throw createError(401, 'User not found');
 
     req.user = user;
