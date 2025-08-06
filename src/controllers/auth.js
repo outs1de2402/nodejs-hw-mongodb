@@ -1,11 +1,9 @@
 import * as service from '../services/auth.js';
-import createError from 'http-errors';
 
 export const register = async (req, res) => {
   const { name, email, password } = req.body;
   const user = await service.findUserByEmail(email);
   if (user) throw createError(409, 'Email in use');
-
   const newUser = await service.createUser({ name, email, password });
 
   res.status(201).json({
@@ -22,7 +20,7 @@ export const register = async (req, res) => {
 
 export const login = async (req, res) => {
   const { email, password } = req.body;
-  const { accessToken, refreshToken } = await service.loginUser(
+  const { accessToken, refreshToken, session } = await service.loginUser(
     email,
     password,
   );
@@ -34,22 +32,23 @@ export const login = async (req, res) => {
       secure: true,
       maxAge: 30 * 24 * 60 * 60 * 1000,
     })
-    .cookie('accessToken', accessToken, {
+    .cookie('sessionId', session._id.toString(), {
       httpOnly: true,
       sameSite: 'strict',
       secure: true,
-      maxAge: 15 * 60 * 1000,
+      maxAge: 30 * 24 * 60 * 60 * 1000,
     })
     .status(200)
     .json({
       status: 200,
-      message: 'Successfully logged in user!',
+      message: 'Successfully logged in an user!',
+      data: { accessToken },
     });
 };
 
 export const refresh = async (req, res) => {
   const oldRefreshToken = req.cookies.refreshToken;
-  const { accessToken, refreshToken } = await service.refreshSession(
+  const { accessToken, refreshToken, session } = await service.refreshSession(
     oldRefreshToken,
   );
 
@@ -60,23 +59,25 @@ export const refresh = async (req, res) => {
       secure: true,
       maxAge: 30 * 24 * 60 * 60 * 1000,
     })
-    .cookie('accessToken', accessToken, {
+    .cookie('sessionId', session._id.toString(), {
       httpOnly: true,
       sameSite: 'strict',
       secure: true,
-      maxAge: 15 * 60 * 1000,
+      maxAge: 30 * 24 * 60 * 60 * 1000,
     })
     .status(200)
     .json({
       status: 200,
-      message: 'Successfully refreshed tokens!',
+      message: 'Successfully refreshed a session!',
+      data: { accessToken },
     });
 };
 
 export const logout = async (req, res) => {
-  const refreshToken = req.cookies.refreshToken;
-  await service.logoutUser(refreshToken);
+  const sessionId = req.cookies.sessionId;
+  if (sessionId) await service.logoutUser(sessionId);
+
   res.clearCookie('refreshToken');
-  res.clearCookie('accessToken');
+  res.clearCookie('sessionId');
   res.status(204).send();
 };

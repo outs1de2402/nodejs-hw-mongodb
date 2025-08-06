@@ -1,9 +1,9 @@
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
+import { nanoid } from 'nanoid';
+import createError from 'http-errors';
 import { User } from '../models/user.js';
 import { Session } from '../models/session.js';
-import createError from 'http-errors';
-import { nanoid } from 'nanoid';
 
 const ACCESS_SECRET = process.env.ACCESS_SECRET;
 const REFRESH_SECRET = process.env.REFRESH_SECRET;
@@ -25,8 +25,7 @@ export const loginUser = async (email, password) => {
   const passwordMatch = await bcrypt.compare(password, user.password);
   if (!passwordMatch) throw createError(401, 'Invalid email or password');
 
-  // Видаляємо стару сесію (якщо існує)
-  await Session.findOneAndDelete({ userId: user._id });
+  await Session.deleteMany({ userId: user._id });
 
   const sid = nanoid();
 
@@ -40,37 +39,23 @@ export const loginUser = async (email, password) => {
     expiresIn: REFRESH_EXPIRES_IN,
   });
 
-  const accessExp = new Date(Date.now() + 15 * 60 * 1000); // 15 хв
-  const refreshExp = new Date(Date.now() + 30 * 24 * 60 * 60 * 1000); // 30 днів
-
-  await Session.create({
+  const session = await Session.create({
     userId: user._id,
     accessToken,
     refreshToken,
-    accessTokenValidUntil: accessExp,
-    refreshTokenValidUntil: refreshExp,
+    accessTokenValidUntil: new Date(Date.now() + 15 * 60 * 1000),
+    refreshTokenValidUntil: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000),
   });
 
-  return { accessToken, refreshToken };
+  return { accessToken, refreshToken, session };
 };
 
 export const refreshSession = async (oldRefreshToken) => {
-  if (!oldRefreshToken) throw createError(401, 'Refresh token is missing');
+  const payload = jwt.verify(oldRefreshToken, REFRESH_SECRET);
+  const session = await Session.findOne({ refreshToken: oldRefreshToken });
+  if (!session) throw createError(401, 'Session not found');
 
-  let payload;
-  try {
-    payload = jwt.verify(oldRefreshToken, REFRESH_SECRET);
-  } catch (err) {
-    throw createError(401, 'Invalid refresh token');
-  }
-
-  const existingSession = await Session.findOne({
-    refreshToken: oldRefreshToken,
-  });
-  if (!existingSession) throw createError(401, 'Session not found');
-
-  // Видаляємо стару сесію
-  await Session.findByIdAndDelete(existingSession._id);
+  await session.deleteOne();
 
   const newSid = nanoid();
 
@@ -84,21 +69,17 @@ export const refreshSession = async (oldRefreshToken) => {
     expiresIn: REFRESH_EXPIRES_IN,
   });
 
-  const accessExp = new Date(Date.now() + 15 * 60 * 1000);
-  const refreshExp = new Date(Date.now() + 30 * 24 * 60 * 60 * 1000);
-
-  await Session.create({
+  const newSession = await Session.create({
     userId: payload.sub,
     accessToken,
     refreshToken,
-    accessTokenValidUntil: accessExp,
-    refreshTokenValidUntil: refreshExp,
+    accessTokenValidUntil: new Date(Date.now() + 15 * 60 * 1000),
+    refreshTokenValidUntil: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000),
   });
 
-  return { accessToken, refreshToken };
+  return { accessToken, refreshToken, session: newSession };
 };
 
-export const logoutUser = async (refreshToken) => {
-  if (!refreshToken) throw createError(401, 'Refresh token is missing');
-  await Session.findOneAndDelete({ refreshToken });
+export const logoutUser = async (sessionId) => {
+  await Session.findByIdAndDelete(sessionId);
 };
