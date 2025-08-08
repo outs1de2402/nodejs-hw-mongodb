@@ -1,9 +1,11 @@
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
 import { nanoid } from 'nanoid';
-import createError from 'http-errors';
 import { User } from '../models/user.js';
 import { Session } from '../models/session.js';
+import createHttpError from 'http-errors';
+
+import { sendEmail } from './email.js';
 
 const ACCESS_SECRET = process.env.ACCESS_SECRET;
 const REFRESH_SECRET = process.env.REFRESH_SECRET;
@@ -20,10 +22,10 @@ export const createUser = async ({ name, email, password }) => {
 
 export const loginUser = async (email, password) => {
   const user = await User.findOne({ email });
-  if (!user) throw createError(401, 'Invalid email or password');
+  if (!user) throw createHttpError(401, 'Invalid email or password');
 
   const passwordMatch = await bcrypt.compare(password, user.password);
-  if (!passwordMatch) throw createError(401, 'Invalid email or password');
+  if (!passwordMatch) throw createHttpError(401, 'Invalid email or password');
 
   await Session.deleteMany({ userId: user._id });
 
@@ -53,7 +55,7 @@ export const loginUser = async (email, password) => {
 export const refreshSession = async (oldRefreshToken) => {
   const payload = jwt.verify(oldRefreshToken, REFRESH_SECRET);
   const session = await Session.findOne({ refreshToken: oldRefreshToken });
-  if (!session) throw createError(401, 'Session not found');
+  if (!session) throw createHttpError(401, 'Session not found');
 
   await session.deleteOne();
 
@@ -82,4 +84,24 @@ export const refreshSession = async (oldRefreshToken) => {
 
 export const logoutUser = async (sessionId) => {
   await Session.findByIdAndDelete(sessionId);
+};
+export const requestResetToken = async (email) => {
+  const user = await User.findOne({ email });
+  if (!user) throw createHttpError(404, 'User not found');
+
+  const token = jwt.sign({ email }, process.env.JWT_SECRET, {
+    expiresIn: '5m',
+  });
+
+  const resetLink = `${process.env.APP_DOMAIN}/reset-password?token=${token}`;
+  const html = `<p>Click this link to reset your password: <a href="${resetLink}">${resetLink}</a></p>`;
+
+  try {
+    await sendEmail(email, 'Password Reset', html);
+  } catch (err) {
+    throw createHttpError(
+      500,
+      'Failed to send the email, please try again later.',
+    );
+  }
 };

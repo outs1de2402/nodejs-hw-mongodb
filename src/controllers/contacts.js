@@ -1,6 +1,7 @@
 import * as service from '../services/contacts.js';
 import createError from 'http-errors';
-
+import fs from 'fs/promises';
+import { uploadImage } from '../services/cloudinary.js';
 export const getAllContacts = async (req, res) => {
   const userId = req.user._id;
   const result = await service.getAllContacts(userId, req.query);
@@ -66,4 +67,22 @@ export default {
   createContact,
   updateContact,
   deleteContact,
+};
+export const addContact = async (req, res) => {
+  const { _id: userId } = req.user;
+  const { path } = req.file || {};
+
+  let photoUrl = '';
+  if (path) {
+    photoUrl = await uploadImage(path);
+    await fs.unlink(path);
+  }
+
+  const contact = await Contact.create({
+    ...req.body,
+    userId,
+    photo: photoUrl,
+  });
+
+  res.status(201).json(contact);
 };
