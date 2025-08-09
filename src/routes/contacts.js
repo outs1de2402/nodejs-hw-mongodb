@@ -10,6 +10,7 @@ import {
 import { authenticate } from '../middlewares/authenticate.js'; // 🔐 Додано
 import upload from '../middlewares/upload.js';
 import { addContact } from '../controllers/contacts.js';
+import { updateContact } from '../controllers/contacts.js';
 const router = express.Router();
 
 // 🔐 Захист усіх маршрутів
