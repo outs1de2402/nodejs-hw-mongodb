@@ -9,6 +9,7 @@ import {
 } from '../schemas/contactSchema.js';
 import { authenticate } from '../middlewares/authenticate.js'; // 🔐 Додано
 import upload from '../middlewares/upload.js';
+import { addContact } from '../controllers/contacts.js';
 const router = express.Router();
 
 // 🔐 Захист усіх маршрутів
