@@ -102,6 +102,7 @@ export const sendResetEmail = async (req, res) => {
   try {
     await sendEmail(email, 'Password Reset', html);
   } catch (err) {
+    // console.log(err);
     throw createHttpError(
       500,
       'Failed to send the email, please try again later.',
