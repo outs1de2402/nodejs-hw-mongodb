@@ -38,6 +38,12 @@ export const login = async (req, res) => {
       secure: false,
       maxAge: 30 * 24 * 60 * 60 * 1000,
     })
+    .cookie('accessToken', accessToken, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === 'production',
+      sameSite: 'strict',
+      maxAge: 1000 * 60 * 15, // 15 хв
+    })
     .cookie('sessionId', session._id.toString(), {
       httpOnly: true,
       sameSite: 'strict',

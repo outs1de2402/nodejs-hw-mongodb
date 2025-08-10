@@ -1,7 +1,7 @@
 import * as service from '../services/contacts.js';
 import createError from 'http-errors';
-import fs from 'fs/promises';
-import { uploadImage } from '../services/cloudinary.js';
+import { Contact } from '../models/contact.js';
+
 export const getAllContacts = async (req, res) => {
   const userId = req.user._id;
   const result = await service.getAllContacts(userId, req.query);
@@ -27,28 +27,35 @@ export const getContactById = async (req, res) => {
 };
 
 export const createContact = async (req, res) => {
-  const userId = req.user._id;
-  const data = await service.createContact(req.body, userId);
+  const { _id: userId } = req.user;
+  const contactData = { ...req.body, userId };
 
-  res.status(201).json({
-    status: 201,
-    message: 'Successfully created a contact!',
-    data,
-  });
+  if (req.file?.path) {
+    contactData.photo = req.file.path; // Cloudinary повертає URL в req.file.path
+  }
+
+  const contact = await Contact.create(contactData);
+  res.status(201).json(contact);
 };
 
 export const updateContact = async (req, res) => {
   const { contactId } = req.params;
-  const userId = req.user._id;
-  const data = await service.updateContact(contactId, req.body, userId);
+  const { _id: userId } = req.user;
 
-  if (!data) throw createError(404, 'Contact not found');
+  const updateData = { ...req.body };
+  if (req.file?.path) {
+    updateData.photo = req.file.path;
+  }
 
-  res.status(200).json({
-    status: 200,
-    message: 'Successfully updated a contact!',
-    data,
-  });
+  const contact = await Contact.findOneAndUpdate(
+    { _id: contactId, userId },
+    updateData,
+    { new: true },
+  );
+
+  if (!contact) throw createError(404, 'Contact not found');
+
+  res.status(200).json(contact);
 };
 
 export const deleteContact = async (req, res) => {
@@ -58,31 +65,5 @@ export const deleteContact = async (req, res) => {
 
   if (!result) throw createError(404, 'Contact not found');
 
-  res.status(204).send(); // No content
-};
-
-export default {
-  getAllContacts,
-  getContactById,
-  createContact,
-  updateContact,
-  deleteContact,
-};
-export const addContact = async (req, res) => {
-  const { _id: userId } = req.user;
-  const { path } = req.file || {};
-
-  let photoUrl = '';
-  if (path) {
-    photoUrl = await uploadImage(path);
-    await fs.unlink(path);
-  }
-
-  const contact = await Contact.create({
-    ...req.body,
-    userId,
-    photo: photoUrl,
-  });
-
-  res.status(201).json(contact);
+  res.status(204).send();
 };

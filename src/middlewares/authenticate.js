@@ -1,19 +1,33 @@
-import jwt from 'jsonwebtoken';
-import createError from 'http-errors';
+import createHttpError from 'http-errors';
+import { Session } from '../models/session.js';
 import { User } from '../models/user.js';
 
 export const authenticate = async (req, res, next) => {
-  try {
-    const token = req.cookies.accessToken;
-    if (!token) throw createError(401, 'Access token missing');
+  const token = req.cookies?.accessToken; // Читаємо з куків
 
-    const payload = jwt.verify(token, process.env.ACCESS_SECRET);
-    const user = await User.findById(payload.sub);
-    if (!user) throw createError(401, 'User not found');
-
-    req.user = user;
-    next();
-  } catch (err) {
-    next(createError(401, 'Access token expired or invalid'));
+  if (!token) {
+    return next(createHttpError(401, 'Not authenticated'));
   }
+
+  const session = await Session.findOne({ accessToken: token });
+
+  if (!session) {
+    return next(createHttpError(401, 'Session not found'));
+  }
+
+  const isAccessTokenExpired =
+    new Date() > new Date(session.accessTokenValidUntil);
+
+  if (isAccessTokenExpired) {
+    return next(createHttpError(401, 'Access token expired'));
+  }
+
+  const user = await User.findById(session.userId);
+
+  if (!user) {
+    return next(createHttpError(401, 'User not found'));
+  }
+
+  req.user = user;
+  next();
 };

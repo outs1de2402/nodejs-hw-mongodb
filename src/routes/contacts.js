@@ -7,34 +7,28 @@ import {
   createContactSchema,
   updateContactSchema,
 } from '../schemas/contactSchema.js';
-import { authenticate } from '../middlewares/authenticate.js'; // 🔐 Додано
-import upload from '../middlewares/upload.js';
-import { addContact } from '../controllers/contacts.js';
-import { updateContact } from '../controllers/contacts.js';
+import { authenticate } from '../middlewares/authenticate.js';
+import { uploadCloud } from '../services/cloudinary.js';
+
 const router = express.Router();
 
-// 🔐 Захист усіх маршрутів
 router.use(authenticate);
 
 router.get('/', ctrlWrapper(ctrl.getAllContacts));
 router.get('/:contactId', isValidId, ctrlWrapper(ctrl.getContactById));
 router.post(
   '/',
+  uploadCloud.single('photo'),
   validateBody(createContactSchema),
   ctrlWrapper(ctrl.createContact),
 );
 router.patch(
   '/:contactId',
   isValidId,
+  uploadCloud.single('photo'),
   validateBody(updateContactSchema),
   ctrlWrapper(ctrl.updateContact),
 );
 router.delete('/:contactId', isValidId, ctrlWrapper(ctrl.deleteContact));
-router.post('/', authenticate, upload.single('photo'), ctrlWrapper(addContact));
-router.patch(
-  '/:id',
-  authenticate,
-  upload.single('photo'),
-  ctrlWrapper(updateContact),
-);
+
 export default router;
