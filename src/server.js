@@ -7,6 +7,7 @@ import authRouter from './routes/auth.js';
 import cookieParser from 'cookie-parser';
 import { notFoundHandler } from './middlewares/notFoundhandler.js';
 import { errorHandler } from './middlewares/errorHandler.js';
+import docsRouter from './routes/docs.js';
 
 export function setupServer() {
   const app = express();
@@ -36,4 +37,6 @@ export function setupServer() {
 
   const PORT = process.env.PORT || 3000;
   app.listen(PORT, () => logger.info(`Server is running on port ${PORT}`));
+
+  app.use(docsRouter);
 }
