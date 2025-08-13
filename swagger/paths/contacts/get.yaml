@@ -1,0 +1,25 @@
+tags:
+  - Contacts
+summary: Отримати всі контакти користувача
+operationId: getAllContacts
+description: Повертає список контактів авторизованого користувача з можливістю фільтрації та пагінації.
+security:
+  - bearerAuth: []
+parameters:
+  - name: page
+    in: query
+    description: Номер сторінки
+    required: false
+    schema:
+      type: integer
+  - name: limit
+    in: query
+    description: Кількість елементів на сторінку
+    required: false
+    schema:
+      type: integer
+responses:
+  '200':
+    description: Список контактів
+  '401':
+    description: Не авторизовано

@@ -1,0 +1,21 @@
+tags:
+  - Contacts
+summary: Видалити контакт
+operationId: deleteContact
+description: Видаляє контакт за ID
+security:
+  - bearerAuth: []
+parameters:
+  - name: contactId
+    in: path
+    required: true
+    description: ID контакту
+    schema:
+      type: string
+responses:
+  '200':
+    description: Контакт видалено
+  '404':
+    description: Контакт не знайдено
+  '401':
+    description: Не авторизовано
