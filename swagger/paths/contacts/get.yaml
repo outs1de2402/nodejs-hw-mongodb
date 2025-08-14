@@ -1,25 +1,55 @@
 tags:
   - Contacts
-summary: Отримати всі контакти користувача
+summary: Отримати всі контакти
 operationId: getAllContacts
-description: Повертає список контактів авторизованого користувача з можливістю фільтрації та пагінації.
+description: Повертає список контактів з пагінацією
 security:
-  - bearerAuth: []
+  - cookieAuth: []
 parameters:
-  - name: page
-    in: query
-    description: Номер сторінки
-    required: false
-    schema:
-      type: integer
-  - name: limit
-    in: query
-    description: Кількість елементів на сторінку
-    required: false
-    schema:
-      type: integer
+  - in: query
+    name: page
+    schema: { type: integer }
+    example: 1
+  - in: query
+    name: perPage
+    schema: { type: integer }
+    example: 10
+  - in: query
+    name: sortBy
+    schema: { type: string }
+    example: name
+  - in: query
+    name: sortOrder
+    schema: { type: string, enum: [asc, desc] }
+    example: asc
+  - in: query
+    name: type
+    schema: { type: string, enum: [work, home, personal] }
+  - in: query
+    name: isFavourite
+    schema: { type: boolean }
 responses:
   '200':
     description: Список контактів
+    content:
+      application/json:
+        schema:
+          allOf:
+            - $ref: ../../components/schemas/ApiResponse.yaml
+            - type: object
+              properties:
+                data:
+                  type: object
+                  properties:
+                    data:
+                      type: array
+                      items:
+                        $ref: ../../components/schemas/Contact.yaml
+                    pagination:
+                      $ref: ../../components/schemas/Pagination.yaml
   '401':
-    description: Не авторизовано
+    description: Unauthorized
+    content:
+      application/json:
+        schema:
+          $ref: ../../components/schemas/Error.yaml

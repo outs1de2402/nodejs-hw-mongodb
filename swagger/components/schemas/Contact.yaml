@@ -1,0 +1,24 @@
+type: object
+properties:
+  _id:
+    type: string
+    example: 64b1a7e4f9a7f5d4c8a7b9c2
+  name:
+    type: string
+    example: Ivan Petrenko
+  phoneNumber:
+    type: string
+    example: '+380501234567'
+  email:
+    type: string
+    example: ivan@example.com
+  isFavourite:
+    type: boolean
+    example: true
+  contactType:
+    type: string
+    enum: [work, home, personal]
+    example: personal
+  photo:
+    type: string
+    example: https://res.cloudinary.com/demo/image/upload/v1690000000/contact.jpg

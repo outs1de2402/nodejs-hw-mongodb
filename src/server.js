@@ -31,9 +31,10 @@ export function setupServer() {
   // 🔧 Роути підключаються після всіх парсерів
   app.use('/auth', authRouter);
   app.use('/contacts', contactsRouter);
-  app.use(docsRouter);
+
   app.use(notFoundHandler);
   app.use(errorHandler);
+  app.use(docsRouter);
 
   const PORT = process.env.PORT || 3000;
   app.listen(PORT, () => logger.info(`Server is running on port ${PORT}`));

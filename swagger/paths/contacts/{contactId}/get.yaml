@@ -2,20 +2,31 @@ tags:
   - Contacts
 summary: Отримати контакт за ID
 operationId: getContactById
-description: Повертає контакт за вказаним ID
+description: Повертає один контакт користувача
 security:
-  - bearerAuth: []
+  - cookieAuth: []
 parameters:
-  - name: contactId
-    in: path
+  - in: path
+    name: contactId
     required: true
-    description: ID контакту
     schema:
       type: string
+    description: ID контакту
 responses:
   '200':
     description: Знайдений контакт
+    content:
+      application/json:
+        schema:
+          allOf:
+            - $ref: ../../../components/schemas/ApiResponse.yaml
+            - type: object
+              properties:
+                data:
+                  $ref: ../../../components/schemas/Contact.yaml
   '404':
     description: Контакт не знайдено
-  '401':
-    description: Не авторизовано
+    content:
+      application/json:
+        schema:
+          $ref: ../../../components/schemas/Error.yaml

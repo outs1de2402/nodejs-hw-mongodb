@@ -2,20 +2,22 @@ tags:
   - Contacts
 summary: Видалити контакт
 operationId: deleteContact
-description: Видаляє контакт за ID
+description: Видаляє контакт користувача
 security:
-  - bearerAuth: []
+  - cookieAuth: []
 parameters:
-  - name: contactId
-    in: path
+  - in: path
+    name: contactId
     required: true
-    description: ID контакту
     schema:
       type: string
+    description: ID контакту
 responses:
-  '200':
-    description: Контакт видалено
+  '204':
+    description: Контакт успішно видалено (тіло відповіді відсутнє)
   '404':
     description: Контакт не знайдено
-  '401':
-    description: Не авторизовано
+    content:
+      application/json:
+        schema:
+          $ref: ../../../components/schemas/Error.yaml
