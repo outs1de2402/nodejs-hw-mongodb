@@ -1,0 +1,14 @@
+description: Список контактів з пагінацією
+content:
+  application/json:
+    schema:
+      type: object
+      properties:
+        status:
+          type: integer
+          example: 200
+        message:
+          type: string
+          example: Successfully found contacts!
+        data:
+          $ref: '../schemas/Pagination.yaml'

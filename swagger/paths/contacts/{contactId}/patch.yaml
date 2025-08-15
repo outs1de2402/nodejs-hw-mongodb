@@ -2,47 +2,25 @@ tags:
   - Contacts
 summary: Оновити контакт
 operationId: updateContact
-description: Оновлює дані існуючого контакту
-security:
-  - cookieAuth: []
 parameters:
   - in: path
     name: contactId
     required: true
     schema:
       type: string
-    description: ID контакту
 requestBody:
   required: true
   content:
     multipart/form-data:
       schema:
-        type: object
-        properties:
-          name:
-            type: string
-          phoneNumber:
-            type: string
-          email:
-            type: string
-          isFavourite:
-            type: boolean
-          contactType:
-            type: string
-            enum: [work, home, personal]
-          photo:
-            type: string
-            format: binary
+        $ref: '../../../components/schemas/ContactInput.yaml'
+      encoding:
+        photo:
+          contentType: image/*
 responses:
-  '200':
-    description: Контакт оновлено
-    content:
-      application/json:
-        schema:
-          $ref: ../../../components/schemas/Contact.yaml
-  '404':
-    description: Контакт не знайдено
-    content:
-      application/json:
-        schema:
-          $ref: ../../../components/schemas/Error.yaml
+  200:
+    $ref: '../../../components/responses/200Contact.yaml'
+  400:
+    $ref: '../../../components/responses/400.yaml'
+security:
+  - bearerAuth: []

@@ -6,8 +6,12 @@ import path from 'path';
 
 const router = express.Router();
 
-const swaggerPath = path.resolve('docs', 'swagger.json');
-const swaggerDocument = JSON.parse(fs.readFileSync(swaggerPath, 'utf-8'));
+// Читаємо згенерований Redocly JSON
+const swaggerFilePath = path.join(process.cwd(), 'docs', 'swagger.json');
+let swaggerDocument = {};
+if (fs.existsSync(swaggerFilePath)) {
+  swaggerDocument = JSON.parse(fs.readFileSync(swaggerFilePath, 'utf-8'));
+}
 
 router.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 

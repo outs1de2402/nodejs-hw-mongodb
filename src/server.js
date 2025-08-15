@@ -24,17 +24,18 @@ export function setupServer() {
   app.use(express.json()); // 🔥 JSON parser має бути перед роутами
   app.use(cookieParser());
 
+  // 🔹 Тестовий кореневий роут
   app.get('/', (req, res) => {
     res.send('API is working');
   });
 
-  // 🔧 Роути підключаються після всіх парсерів
+  // 🔹 Підключаємо роутери
   app.use('/auth', authRouter);
   app.use('/contacts', contactsRouter);
-
+  app.use(docsRouter);
+  // 🔹 Обробка помилок
   app.use(notFoundHandler);
   app.use(errorHandler);
-  app.use(docsRouter);
 
   const PORT = process.env.PORT || 3000;
   app.listen(PORT, () => logger.info(`Server is running on port ${PORT}`));

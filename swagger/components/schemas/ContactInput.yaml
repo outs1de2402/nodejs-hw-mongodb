@@ -1,15 +1,11 @@
 type: object
 properties:
-  _id:
-    type: string
   name:
     type: string
   phoneNumber:
     type: string
   email:
-    type:
-      - string
-      - 'null'
+    type: string
   isFavourite:
     type: boolean
   contactType:
@@ -17,15 +13,8 @@ properties:
     enum: [personal, home, work]
   photo:
     type: string
-  userId:
-    type: string
-  createdAt:
-    type: string
-  updatedAt:
-    type: string
+    format: binary
 required:
-  - _id
   - name
   - phoneNumber
   - contactType
-  - userId

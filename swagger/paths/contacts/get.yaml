@@ -2,54 +2,44 @@ tags:
   - Contacts
 summary: Отримати всі контакти
 operationId: getAllContacts
-description: Повертає список контактів з пагінацією
-security:
-  - cookieAuth: []
 parameters:
   - in: query
     name: page
-    schema: { type: integer }
-    example: 1
+    schema:
+      type: integer
+    description: Номер сторінки
   - in: query
     name: perPage
-    schema: { type: integer }
-    example: 10
+    schema:
+      type: integer
+    description: Контакти на сторінку
   - in: query
     name: sortBy
-    schema: { type: string }
-    example: name
+    schema:
+      type: string
+      enum: [name]
+    description: Поле сортування
   - in: query
     name: sortOrder
-    schema: { type: string, enum: [asc, desc] }
-    example: asc
+    schema:
+      type: string
+      enum: [asc, desc]
+    description: Порядок сортування
   - in: query
     name: type
-    schema: { type: string, enum: [work, home, personal] }
+    schema:
+      type: string
+      enum: [personal, home, work]
+    description: Фільтр по типу контакту
   - in: query
     name: isFavourite
-    schema: { type: boolean }
+    schema:
+      type: boolean
+    description: Фільтр по улюбленим
 responses:
-  '200':
-    description: Список контактів
-    content:
-      application/json:
-        schema:
-          allOf:
-            - $ref: ../../components/schemas/ApiResponse.yaml
-            - type: object
-              properties:
-                data:
-                  type: object
-                  properties:
-                    data:
-                      type: array
-                      items:
-                        $ref: ../../components/schemas/Contact.yaml
-                    pagination:
-                      $ref: ../../components/schemas/Pagination.yaml
-  '401':
-    description: Unauthorized
-    content:
-      application/json:
-        schema:
-          $ref: ../../components/schemas/Error.yaml
+  200:
+    $ref: '../../components/responses/200Contacts.yaml'
+  400:
+    $ref: '../../components/responses/400.yaml'
+security:
+  - bearerAuth: []

@@ -1,41 +1,20 @@
 tags:
   - Contacts
-summary: Створити новий контакт
+summary: Створити контакт
 operationId: createContact
-description: Додає новий контакт користувача
-security:
-  - cookieAuth: []
 requestBody:
   required: true
   content:
     multipart/form-data:
       schema:
-        type: object
-        properties:
-          name:
-            type: string
-          phoneNumber:
-            type: string
-          email:
-            type: string
-          isFavourite:
-            type: boolean
-          contactType:
-            type: string
-            enum: [work, home, personal]
-          photo:
-            type: string
-            format: binary
+        $ref: '../../components/schemas/ContactInput.yaml'
+      encoding:
+        photo:
+          contentType: image/*
 responses:
-  '201':
-    description: Створено
-    content:
-      application/json:
-        schema:
-          $ref: ../../components/schemas/Contact.yaml
-  '400':
-    description: Validation error
-    content:
-      application/json:
-        schema:
-          $ref: ../../components/schemas/Error.yaml
+  201:
+    $ref: '../../components/responses/201Contact.yaml'
+  400:
+    $ref: '../../components/responses/400.yaml'
+security:
+  - bearerAuth: []

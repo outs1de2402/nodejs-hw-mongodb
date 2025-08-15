@@ -1,14 +1,14 @@
 openapi: 3.1.0
 info:
   version: 1.0.0
-  title: Contacts API
+  title: My Contacts API
+  description: API для роботи з контактами користувача
   license:
     name: Apache 2.0
     url: http://www.apache.org/licenses/LICENSE-2.0.html
-  description: API для керування контактами користувачів
 tags:
   - name: Contacts
-    description: Операції з контактами
+    description: Операції з контактами користувача
 servers:
   - url: http://localhost:3000
   - url: https://nodejs-hw-mongodb-r7np.onrender.com
@@ -27,7 +27,26 @@ paths:
       $ref: ../swagger/paths/contacts/{contactId}/delete.yaml
 components:
   securitySchemes:
-    cookieAuth:
-      type: apiKey
-      in: cookie
-      name: token
+    bearerAuth:
+      type: http
+      scheme: bearer
+  schemas:
+    Contact:
+      $ref: ../swagger/components/schemas/Contact.yaml
+    ContactInput:
+      $ref: ../swagger/components/schemas/ContactInput.yaml
+    Pagination:
+      $ref: ../swagger/components/schemas/Pagination.yaml
+    ErrorResponse:
+      $ref: ../swagger/components/schemas/ErrorResponse.yaml
+  responses:
+    200Contacts:
+      $ref: ../swagger/components/responses/200Contacts.yaml
+    200Contact:
+      $ref: ../swagger/components/responses/200Contact.yaml
+    201Contact:
+      $ref: ../swagger/components/responses/201Contact.yaml
+    204:
+      $ref: ../swagger/components/responses/204.yaml
+    400:
+      $ref: ../swagger/components/responses/400.yaml
