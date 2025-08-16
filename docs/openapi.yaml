@@ -46,7 +46,5 @@ components:
       $ref: ../swagger/components/responses/200Contact.yaml
     201Contact:
       $ref: ../swagger/components/responses/201Contact.yaml
-    204:
-      $ref: ../swagger/components/responses/204.yaml
     400:
       $ref: ../swagger/components/responses/400.yaml

@@ -237,7 +237,7 @@
         ],
         "responses": {
           "204": {
-            "$ref": "#/components/responses/204"
+            "description": "Contact successfully deleted"
           },
           "400": {
             "$ref": "#/components/responses/400"
@@ -398,26 +398,6 @@
       }
     },
     "responses": {
-      "204": {
-        "description": "Контакт видалено",
-        "content": {
-          "application/json": {
-            "schema": {
-              "type": "object",
-              "properties": {
-                "status": {
-                  "type": "integer",
-                  "example": 204
-                },
-                "message": {
-                  "type": "string",
-                  "example": "Contact successfully deleted!"
-                }
-              }
-            }
-          }
-        }
-      },
       "400": {
         "description": "Помилка запиту",
         "content": {
