@@ -1,0 +1,20 @@
+type: object
+properties:
+  name:
+    type: string
+  phoneNumber:
+    type: string
+  email:
+    type: string
+  isFavourite:
+    type: boolean
+  contactType:
+    type: string
+    enum: [personal, home, work]
+  photo:
+    type: string
+    format: binary
+required:
+  - name
+  - phoneNumber
+  - contactType

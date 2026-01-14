@@ -1,0 +1,26 @@
+tags:
+  - Contacts
+summary: Оновити контакт
+operationId: updateContact
+parameters:
+  - in: path
+    name: contactId
+    required: true
+    schema:
+      type: string
+requestBody:
+  required: true
+  content:
+    multipart/form-data:
+      schema:
+        $ref: '../../../components/schemas/ContactInput.yaml'
+      encoding:
+        photo:
+          contentType: image/*
+responses:
+  200:
+    $ref: '../../../components/responses/200Contact.yaml'
+  400:
+    $ref: '../../../components/responses/400.yaml'
+security:
+  - bearerAuth: []

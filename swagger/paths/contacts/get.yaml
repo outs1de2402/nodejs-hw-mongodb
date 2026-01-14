@@ -1,0 +1,45 @@
+tags:
+  - Contacts
+summary: Отримати всі контакти
+operationId: getAllContacts
+parameters:
+  - in: query
+    name: page
+    schema:
+      type: integer
+    description: Номер сторінки
+  - in: query
+    name: perPage
+    schema:
+      type: integer
+    description: Контакти на сторінку
+  - in: query
+    name: sortBy
+    schema:
+      type: string
+      enum: [name]
+    description: Поле сортування
+  - in: query
+    name: sortOrder
+    schema:
+      type: string
+      enum: [asc, desc]
+    description: Порядок сортування
+  - in: query
+    name: type
+    schema:
+      type: string
+      enum: [personal, home, work]
+    description: Фільтр по типу контакту
+  - in: query
+    name: isFavourite
+    schema:
+      type: boolean
+    description: Фільтр по улюбленим
+responses:
+  200:
+    $ref: '../../components/responses/200Contacts.yaml'
+  400:
+    $ref: '../../components/responses/400.yaml'
+security:
+  - bearerAuth: []

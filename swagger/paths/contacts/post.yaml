@@ -1,0 +1,20 @@
+tags:
+  - Contacts
+summary: Створити контакт
+operationId: createContact
+requestBody:
+  required: true
+  content:
+    multipart/form-data:
+      schema:
+        $ref: '../../components/schemas/ContactInput.yaml'
+      encoding:
+        photo:
+          contentType: image/*
+responses:
+  201:
+    $ref: '../../components/responses/201Contact.yaml'
+  400:
+    $ref: '../../components/responses/400.yaml'
+security:
+  - bearerAuth: []

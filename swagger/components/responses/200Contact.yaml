@@ -1,0 +1,14 @@
+description: Один контакт
+content:
+  application/json:
+    schema:
+      type: object
+      properties:
+        status:
+          type: integer
+          example: 200
+        message:
+          type: string
+          example: Successfully found contact with id 123!
+        data:
+          $ref: '../schemas/Contact.yaml'
