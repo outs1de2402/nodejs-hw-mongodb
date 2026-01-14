@@ -3,22 +3,23 @@ import cors from 'cors';
 import pino from 'pino';
 import pinoHttp from 'pino-http';
 import contactsRouter from './routes/contacts.js';
+import { notFoundHandler } from './middlewares/notFoundhandler.js';
+import { errorHandler } from './middlewares/errorHandler.js';
 
 export function setupServer() {
   const app = express();
   const logger = pino();
+  app.get('/', (req, res) => {
+    res.send('API is working');
+  });
 
   app.use(pinoHttp({ logger }));
   app.use(cors());
   app.use(express.json());
 
-  // ---------- маршрути ----------
   app.use('/contacts', contactsRouter);
-
-  // ---------- 404 ----------
-  app.use('*', (_, res) => {
-    res.status(404).json({ message: 'Not found' });
-  });
+  app.use(notFoundHandler);
+  app.use(errorHandler);
 
   const PORT = process.env.PORT || 3000;
   app.listen(PORT, () => logger.info(`Server is running on port ${PORT}`));
